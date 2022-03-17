@@ -19,9 +19,7 @@
         /// <param name="y2">the second y coordinate</param>
         public void AddLine(Vector3 p1, Vector3 p2)
         {
-            bool exists = false;
-            VertexTable.Add(p1);
-            VertexTable.Add(p2);
+            if (!VertexTable.Add(p1) || !VertexTable.Add(p2)) return;
 
             LineTable.Add((VertexTable.IndexOf(p1), VertexTable.IndexOf(p2)));
         }

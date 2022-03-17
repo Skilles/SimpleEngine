@@ -2,9 +2,7 @@
 
 namespace SimpleEngine
 {
-    /// <summary>
-    ///     Stores verticies and edges in geometric tables to avoid unneccessary processing. Stores line coordinates as doubles to preserve detail when resizing/rotating.
-    /// </summary>
+    
     internal class LineBuffer2d : ILineBuffer<Vector2>
     {
 
@@ -16,13 +14,7 @@ namespace SimpleEngine
 
         HashSet<(int, int)> ILineBuffer<Vector2>.LineTable => LineTable;
 
-        /// <summary>
-        ///     Adds the line to the vertex and line tables if it doesn't already exist.
-        /// </summary>
-        /// <param name="x1">the first x coordinate</param>
-        /// <param name="y1">the first y coordinate</param>
-        /// <param name="x2">the second x coordinate</param>
-        /// <param name="y2">the second y coordinate</param>
+        
         public void AddLine(Vector2 p1, Vector2 p2)
         {
             if (!VertexTable.Add(p1) || !VertexTable.Add(p2)) return;
@@ -31,10 +23,7 @@ namespace SimpleEngine
             LineTable.Add((VertexTable.IndexOf(p1), VertexTable.IndexOf(p2)));
         }
 
-        /// <summary>
-        ///     Reads lines from a file with the format: x1 x2 y1 y2
-        /// </summary>
-        /// <param name="filePath">the path of the file to load</param>
+        
         public void ReadFromFile(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
@@ -45,10 +34,7 @@ namespace SimpleEngine
             }
         }
 
-        /// <summary>
-        ///     Dumps the current lines to a file in the format: x1 x2 y1 y2
-        /// </summary>
-        /// <param name="fileName"></param>
+        
         public void Dump(string fileName)
         {
             string[] lines = new string[LineTable.Count];

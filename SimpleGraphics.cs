@@ -5,7 +5,7 @@
 /// </summary>
 public class SimpleGraphics : BaseGraphics
 {
-    internal readonly LineBuffer2d LineBuffer;
+    internal readonly ILineBuffer<Vector2> LineBuffer;
 
     public SimpleGraphics(DirectBitmap bitmap) : base(bitmap)
     {
@@ -51,7 +51,7 @@ public class SimpleGraphics : BaseGraphics
             throw new ArgumentException("Matrix must be 3x3");
         }
         base.Clear(Color.White);
-        LineBuffer.Execute((Vector2 p1, Vector2 p2) =>
+        LineBuffer.Execute((p1, p2) =>
         {
             // Grabs the verticies according to the line table
             int x1 = (int) p1.x;
@@ -74,34 +74,6 @@ public class SimpleGraphics : BaseGraphics
             p2.x = nX2;
             p2.y = nY2;
         });
-
-        // DirectBitmap original = bitmap.Clone();
-        // // Clear the line buffer and store a copy of the old values
-        // ISet<(int end1, int end2)> orig_line_table = new HashSet<(int end1, int end2)>(LineBuffer._line_table);
-        // IList<(double x, double y)> orig_vertex_list = new List<(double x, double y)>(LineBuffer._vertex_list);
-        // Clear(Color.White);
-        // // Go through each line in the line table
-        // foreach ((int end1, int end2) in orig_line_table)
-        // {
-        //     // Grabs the verticies according to the line table
-        //     (double x1, double y1) = orig_vertex_list.ElementAt(end1);
-        //     (double x2, double y2) = orig_vertex_list.ElementAt(end2);
-        //     // Convert the coordinates into a vector
-        //     int[,] posVector1 = { { (int)x1, (int)y1, 1 } };
-        //     // Concatanate the position with the transformation matrix
-        //     int[,] product1 = Util.ConcatMatricies(posVector1, matrix);
-        //     int nX1 = product1[0, 0];
-        //     int nY1 = product1[0, 1];
-        //     // Repeat with the second pair set of coordinates
-        //     int[,] posVector2 = { { (int)x2, (int)y2, 1 } };
-        //     int[,] product2 = Util.ConcatMatricies(posVector2, matrix);
-        //     int nX2 = product2[0, 0];
-        //     int nY2 = product2[0, 1];
-        //     // Finally add the new line into the line buffer
-        //     LineBuffer.AddLine(nX1, nY1, nX2, nY2);
-        // }
-        //
-        // original.Dispose();
     }
 
     private void ApplyMatrix(double[,] matrix)
@@ -132,26 +104,6 @@ public class SimpleGraphics : BaseGraphics
             p2.x = nX2;
             p2.y = nY2;
         });
-        // DirectBitmap original = bitmap.Clone();
-        // ISet<(int end1, int end2)> orig_line_table = new HashSet<(int end1, int end2)>(LineBuffer._line_table);
-        // IList<(double x, double y)> orig_vertex_list = new List<(double x, double y)>(LineBuffer._vertex_list);
-        // Clear(Color.White);
-        // foreach ((int end1, int end2) in orig_line_table)
-        // {
-        //     (double x1, double y1) = orig_vertex_list.ElementAt(end1);
-        //     (double x2, double y2) = orig_vertex_list.ElementAt(end2);
-        //     double[,] posVector1 = new double[,] { { x1, y1, 1 } };
-        //     double[,] product1 = Util.ConcatMatricies(posVector1, matrix);
-        //     double nX1 = product1[0, 0];
-        //     double nY1 = product1[0, 1];
-        //     double[,] posVector2 = new double[,] { { x2, y2, 1 } };
-        //     double[,] product2 = Util.ConcatMatricies(posVector2, matrix);
-        //     double nX2 = product2[0, 0];
-        //     double nY2 = product2[0, 1];
-        //     LineBuffer.AddLine(nX1, nY1, nX2, nY2);
-        // }
-        //
-        // original.Dispose();
     }
 
     /// <summary>

@@ -11,10 +11,13 @@ public class PictureBoxRenderer
 
     private readonly SimpleGraphics gfx;
 
+    private readonly AdvancedGraphics aGfx;
+
     public PictureBoxRenderer(PictureBox box)
     {
         bitmap = new DirectBitmap(box.Width, box.Height);
         gfx = new SimpleGraphics(bitmap);
+        aGfx = new AdvancedGraphics(bitmap);
         this.box = box;
     }
 
@@ -23,11 +26,18 @@ public class PictureBoxRenderer
         gfx.Dispose();
     }
 
-    public void DrawLinesFromFile(String filePath)
+    public void DrawLinesFromFile(string filePath)
     {
-        Clear(Color.White);
+        gfx.Clear(Color.White);
         gfx.LineBuffer.ReadFromFile(filePath);
-        Update();
+        Update(false);
+    }
+
+    public void DrawFromFile3d(string filePath)
+    {
+        gfx.Clear(Color.White);
+        aGfx.LoadFromFile(filePath);
+        Update(true);
     }
 
     public void SaveToFile(String filePath)
@@ -41,15 +51,24 @@ public class PictureBoxRenderer
     public void Clear(Color color)
     {
         gfx.Clear(color);
-        Update();
+        aGfx.Clear(false);
+        Update(false);
     }
 
     /// <summary>
     ///     Refreshes the image in the form.
     /// </summary>
-    public void Update()
+    public void Update(bool advanced = false)
     {
-        gfx.DrawFromBuffer();
+        if (advanced)
+        {
+            aGfx.DrawFromBuffer();
+        }
+        else
+        {
+            gfx.DrawFromBuffer();
+        }
+
         box.Image?.Dispose();
         box.Image = (Bitmap)bitmap.Bitmap.Clone();
     }
@@ -74,7 +93,7 @@ public class PictureBoxRenderer
     public void DrawPixelAndUpdate(int x, int y, int size, Color color)
     {
         DrawPixel(x, y, size, color);
-        Update();
+        Update(false);
     }
 
     public void DrawLine(Vector2 p1, Vector2 p2, Color color)

@@ -15,7 +15,7 @@ namespace SimpleEngine
 
         public int Count => m_Dictionary.Count;
 
-        public virtual bool IsReadOnly => m_Dictionary.IsReadOnly;
+        public bool IsReadOnly => m_Dictionary.IsReadOnly;
 
         void ICollection<T>.Add(T item)
         {
