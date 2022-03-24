@@ -216,12 +216,12 @@ public class SimpleGraphics : BaseGraphics
     /// <param name="angle">the angle in degrees</param>
     /// <param name="Cx"></param>
     /// <param name="Cy"></param>
-    public void Rotate(double angle, int Cx, int Cy)
+    public void Rotate(double angle, double Cx, double Cy)
     {
         var cos = Math.Cos(Math.PI * angle / 180);
         var sin = Math.Sin(Math.PI * angle / 180);
         var transMatrix = Util.ConcatMatricies(
-            new double[,] {
+            new[,] {
                 { 1, 0, 0 },
                 { 0, 1, 0 },
                 { -Cx, -Cy, 1 }
@@ -231,7 +231,7 @@ public class SimpleGraphics : BaseGraphics
                 { sin, cos, 0 },
                 { 0, 0, 1 } 
             },
-            new double[,] {
+            new[,] {
                 { 1, 0, 0 },
                 { 0, 1, 0 },
                 { Cx, Cy, 1 }

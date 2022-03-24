@@ -24,6 +24,7 @@ public class PictureBoxRenderer
     ~PictureBoxRenderer()
     {
         gfx.Dispose();
+        aGfx.Dispose();
     }
 
     public void DrawLinesFromFile(string filePath)
@@ -52,7 +53,8 @@ public class PictureBoxRenderer
     {
         gfx.Clear(color);
         aGfx.Clear(false);
-        Update(false);
+        box.Image?.Dispose();
+        box.Image = (Bitmap)bitmap.Bitmap.Clone();
     }
 
     /// <summary>
@@ -109,6 +111,11 @@ public class PictureBoxRenderer
     public SimpleGraphics GetGraphics()
     {
         return gfx;
+    }
+
+    public AdvancedGraphics Get3dGraphics()
+    {
+        return aGfx;
     }
 
     public void Update3dRenderer(Vector3 cameraPoint, double unitS, int viewportDistance)

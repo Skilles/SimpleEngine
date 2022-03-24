@@ -2,7 +2,7 @@
 
 namespace SimpleEngine
 {
-    internal class AdvancedGraphics : BaseGraphics
+    public class AdvancedGraphics : BaseGraphics
     {
         private readonly ILineBuffer<Vector3> WorldLineBuffer;
         private readonly ILineBuffer<Vector2> ScreenLineBuffer;
@@ -190,6 +190,33 @@ namespace SimpleEngine
             });
         }
 
+        public void Scale(double sx, double sy, double sz, double Cx, double Cy, double Cz)
+        {
+            var matrix = Util.ConcatMatricies(
+                new[,]
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {-Cx, -Cy, -Cz, 1}
+                },
+                new[,]
+                {
+                    {sx, 0, 0, 0},
+                    {0, sy, 0, 0},
+                    {0, 0, sz, 0},
+                    {0, 0, 0, 1}
+                },
+                new[,]
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {Cx, Cy, Cz, 1}
+                });
+            ApplyMatrix(matrix);
+        }
+
         public void Rotate(double angle, Axis axis)
         {
             var cos = Math.Cos(angle);
@@ -200,6 +227,33 @@ namespace SimpleEngine
                 Axis.Y => new[,] {{cos, 0, -sin, 0}, {0, 1, 0, 0}, {sin, 0, cos, 0}, {0, 0, 0, 1}},
                 Axis.X => new[,] {{1, 0, 0, 0}, {0, cos, sin, 0}, {0, -sin, cos, 0}, {0, 0, 0, 1}},
             };
+            ApplyMatrix(matrix);
+        }
+        public void Rotate(double angle, Axis axis, double Cx, double Cy, double Cz)
+        {
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
+            var rMatrix = axis switch
+            {
+                Axis.Z => new[,] { { cos, sin, 0, 0 }, { -sin, cos, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } },
+                Axis.Y => new[,] { { cos, 0, -sin, 0 }, { 0, 1, 0, 0 }, { sin, 0, cos, 0 }, { 0, 0, 0, 1 } },
+                Axis.X => new[,] { { 1, 0, 0, 0 }, { 0, cos, sin, 0 }, { 0, -sin, cos, 0 }, { 0, 0, 0, 1 } },
+            };
+            var matrix = Util.ConcatMatricies(new[,]
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {-Cx, -Cy, -Cz, 1}
+                },
+                rMatrix,
+                new[,]
+                {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {Cx, Cy, Cz, 1}
+                });
             ApplyMatrix(matrix);
         }
     }
