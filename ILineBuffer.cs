@@ -36,6 +36,12 @@ namespace SimpleEngine
 
 
         /// <summary>
+        ///     Executes a function on every vertex.
+        /// </summary>
+        /// <param name="function">A function that takes one vector</param>
+        public void Execute(Action<T> function);
+
+        /// <summary>
         ///     Executes a function on every line.
         /// </summary>
         /// <param name="function">A function that takes two vectors</param>

@@ -1,4 +1,6 @@
-﻿namespace SimpleEngine
+﻿using System.Text;
+
+namespace SimpleEngine
 {
     internal static class Util
     {
@@ -91,6 +93,26 @@
                 product = ConcatMatricies(product, matricies[i]);
             }
             return product;
+        }
+
+        public static string ArrayToString<T>(T[,] array)
+        {
+            var sb = new StringBuilder(string.Empty);
+            var maxI = array.GetLength(0);
+            var maxJ = array.GetLength(1);
+            for (var i = 0; i < maxI; i++)
+            {
+                sb.Append(",\n{");
+                for (var j = 0; j < maxJ; j++)
+                {
+                    sb.Append($"{array[i, j]},");
+                }
+
+                sb.Append("}");
+            }
+
+            sb.Replace(",}", "}").Remove(0, 1);
+            return sb.ToString();
         }
     }
 }

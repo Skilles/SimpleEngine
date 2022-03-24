@@ -110,4 +110,9 @@ public class PictureBoxRenderer
     {
         return gfx;
     }
+
+    public void Update3dRenderer(Vector3 cameraPoint, double unitS, int viewportDistance)
+    {
+        aGfx.UpdateSettings(cameraPoint, unitS, viewportDistance);
+    }
 }

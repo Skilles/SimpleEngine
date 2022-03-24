@@ -51,28 +51,19 @@ public class SimpleGraphics : BaseGraphics
             throw new ArgumentException("Matrix must be 3x3");
         }
         base.Clear(Color.White);
-        LineBuffer.Execute((p1, p2) =>
+        LineBuffer.Execute(p1 =>
         {
             // Grabs the verticies according to the line table
             int x1 = (int) p1.x;
             int y1 = (int) p1.y;
-            int x2 = (int) p2.x;
-            int y2 = (int) p2.y;
             // Convert the coordinates into a vector
             int[,] posVector1 = { { x1, y1, 1 } };
             // Concatanate the position with the transformation matrix
             int[,] product1 = Util.ConcatMatricies(posVector1, matrix);
             int nX1 = product1[0, 0];
             int nY1 = product1[0, 1];
-            // Repeat with the second pair set of coordinates
-            int[,] posVector2 = { { x2, y2, 1 } };
-            int[,] product2 = Util.ConcatMatricies(posVector2, matrix);
-            int nX2 = product2[0, 0];
-            int nY2 = product2[0, 1];
             p1.x = nX1;
             p1.y = nY1;
-            p2.x = nX2;
-            p2.y = nY2;
         });
     }
 
@@ -83,26 +74,18 @@ public class SimpleGraphics : BaseGraphics
             throw new ArgumentException("Matrix must be 3x3");
         }
         base.Clear(Color.White);
-        LineBuffer.Execute((p1, p2) =>
+        LineBuffer.Execute(p1 =>
         {
             // Grabs the verticies according to the line table
             (var x1, var y1) = p1;
-            (var x2, var y2) = p2;
             // Convert the coordinates into a vector
             double[,] posVector1 = { { x1, y1, 1 } };
             // Concatanate the position with the transformation matrix
             double[,] product1 = Util.ConcatMatricies(posVector1, matrix);
             double nX1 = product1[0, 0];
             double nY1 = product1[0, 1];
-            // Repeat with the second pair set of coordinates
-            double[,] posVector2 = { { x2, y2, 1 } };
-            double[,] product2 = Util.ConcatMatricies(posVector2, matrix);
-            double nX2 = product2[0, 0];
-            double nY2 = product2[0, 1];
             p1.x = nX1;
             p1.y = nY1;
-            p2.x = nX2;
-            p2.y = nY2;
         });
     }
 

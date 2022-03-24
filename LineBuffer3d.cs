@@ -19,8 +19,9 @@
         /// <param name="y2">the second y coordinate</param>
         public void AddLine(Vector3 p1, Vector3 p2)
         {
-            if (!VertexTable.Add(p1) || !VertexTable.Add(p2)) return;
-
+            VertexTable.Add(p1);
+            VertexTable.Add(p2);
+            
             LineTable.Add((VertexTable.IndexOf(p1), VertexTable.IndexOf(p2)));
         }
 
@@ -30,6 +31,7 @@
         /// <param name="filePath">the path of the file to load</param>
         public void ReadFromFile(string filePath)
         {
+            Clear();
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
             {
@@ -55,13 +57,19 @@
             File.WriteAllLinesAsync(fileName, lines);
         }
 
+        public void Execute(Action<Vector3> function)
+        {
+            foreach (var p in VertexTable)
+            {
+                function(p);
+            }
+        }
+
         public void Execute(Action<Vector3, Vector3> function)
         {
-            foreach ((int end1, int end2) in LineTable)
+            foreach (var (p1, p2) in LineTable)
             {
-                var p1 = VertexTable.ElementAt(end1);
-                var p2 = VertexTable.ElementAt(end2);
-                function(p1, p2);
+                function(VertexTable.ElementAt(p1), VertexTable.ElementAt(p2));
             }
         }
 

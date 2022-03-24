@@ -34,7 +34,7 @@ namespace SimpleEngine
         public int IndexOf(T item)
         {
             if (m_Dictionary.TryGetValue(item, out var index)) return index;
-            return -1;
+            throw new IndexOutOfRangeException($"Item {item} does not exist");
         }
 
         public T ElementAt(int index)

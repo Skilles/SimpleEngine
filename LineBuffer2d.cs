@@ -17,8 +17,8 @@ namespace SimpleEngine
         
         public void AddLine(Vector2 p1, Vector2 p2)
         {
-            if (!VertexTable.Add(p1) || !VertexTable.Add(p2)) return;
-            
+            VertexTable.Add(p1);
+            VertexTable.Add(p2);
 
             LineTable.Add((VertexTable.IndexOf(p1), VertexTable.IndexOf(p2)));
         }
@@ -26,6 +26,7 @@ namespace SimpleEngine
         
         public void ReadFromFile(string filePath)
         {
+            Clear();
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
             {
@@ -48,13 +49,19 @@ namespace SimpleEngine
             File.WriteAllLinesAsync(fileName, lines);
         }
 
+        public void Execute(Action<Vector2> function)
+        {
+            foreach (var p in VertexTable)
+            {
+                function(p);
+            }
+        }
+
         public void Execute(Action<Vector2, Vector2> function)
         {
-            foreach ((int end1, int end2) in LineTable)
+            foreach (var (p1, p2) in LineTable)
             {
-                var p1 = VertexTable.ElementAt(end1);
-                var p2 = VertexTable.ElementAt(end2);
-                function(p1, p2);
+                function(VertexTable.ElementAt(p1), VertexTable.ElementAt(p2));
             }
         }
 
