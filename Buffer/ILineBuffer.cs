@@ -47,6 +47,11 @@ namespace SimpleEngine
         /// <param name="function">A function that takes two vectors</param>
         public void Execute(Action<T, T> function);
 
+        /// <summary>
+        ///     Returns a copy of the buffer with the matrix applied to every point.
+        /// </summary>
+        /// <param name="matrix">The matrix to be applied</param>
+        public ILineBuffer<T> MatrixCopy(double[,] matrix);
 
         public void Clear();
     }

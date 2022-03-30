@@ -10,6 +10,18 @@
 
         HashSet<(int, int)> ILineBuffer<Vector3>.LineTable => LineTable;
 
+        public LineBuffer3d() { }
+        private LineBuffer3d(LineBuffer3d original)
+        {
+            // Deep copy
+            foreach (var (p1, p2) in original.LineTable)
+            {
+                var v1 = original.VertexTable.ElementAt(p1);
+                var v2 = original.VertexTable.ElementAt(p2);
+                AddLine(new Vector3(v1.x, v1.y, v1.z), new Vector3(v2.x, v2.y, v2.z));
+            }
+        }
+
         /// <summary>
         ///     Adds the line to the vertex and line tables if it doesn't already exist.
         /// </summary>
@@ -71,6 +83,25 @@
             {
                 function(VertexTable.ElementAt(p1), VertexTable.ElementAt(p2));
             }
+        }
+
+        public ILineBuffer<Vector3> MatrixCopy(double[,] matrix)
+        {
+            var copy = new LineBuffer3d(this);
+            copy.Execute(p1 =>
+            {
+                // Grabs the verticies according to the line table
+                var (x1, y1, z1) = p1;
+                // Convert the coordinates into a vector
+                double[,] p1Vec = { { x1, y1, z1, 1 } };
+                // Concatenate with the VN Matrix
+                p1Vec = Util.ConcatMatricies(p1Vec, matrix);
+                // Set the new values
+                p1.x = p1Vec[0, 0];
+                p1.y = p1Vec[0, 1];
+                p1.z = p1Vec[0, 2];
+            });
+            return copy;
         }
 
         public void Clear()

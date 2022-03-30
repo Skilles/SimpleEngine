@@ -65,6 +65,11 @@ namespace SimpleEngine
             }
         }
 
+        public ILineBuffer<Vector2> MatrixCopy(double[,] matrix)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Clear()
         {
             VertexTable.Clear();

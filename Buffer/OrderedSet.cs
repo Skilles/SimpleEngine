@@ -2,7 +2,7 @@
 
 namespace SimpleEngine
 {
-    public class OrderedSet<T> : ICollection<T>
+    public class OrderedSet<T> : ICollection<T> where T : notnull
     {
         private readonly IDictionary<T, int> m_Dictionary;
         private readonly IDictionary<int, T> m_RDictionary;
@@ -11,6 +11,12 @@ namespace SimpleEngine
         {
             m_Dictionary = new Dictionary<T, int>();
             m_RDictionary = new Dictionary<int, T>();
+        }
+
+        public OrderedSet(OrderedSet<T> original)
+        {
+            m_Dictionary = new Dictionary<T, int>(original.m_Dictionary);
+            m_RDictionary = new Dictionary<int, T>(original.m_RDictionary);
         }
 
         public int Count => m_Dictionary.Count;

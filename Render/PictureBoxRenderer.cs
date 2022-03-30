@@ -103,6 +103,23 @@ public class PictureBoxRenderer
         gfx.DrawLine(p1, p2);
     }
 
+    // Line that is unaffected by 3d transformations
+    public void DrawLine(Vector3 p1, Vector3 p2, Color color, bool _static = true)
+    {
+        aGfx.DrawLine(p1, p2, _static);
+    }
+
+    public void DrawGraph()
+    {
+        var originV = new Vector3(0, 0, 0);
+        var xV = new Vector3(50, 0, 0);
+        var yV = new Vector3(0, 50, 0);
+        var zV = new Vector3(0, 0, 50);
+        DrawLine(originV, xV, Color.Red);
+        DrawLine(originV, yV, Color.Green);
+        DrawLine(originV, zV, Color.Blue);
+    }
+
     public DirectBitmap GetBitmap()
     {
         return gfx.Bitmap;
@@ -118,8 +135,9 @@ public class PictureBoxRenderer
         return aGfx;
     }
 
-    public void Update3dRenderer(Vector3 cameraPoint, double unitS, int viewportDistance)
+    public void Update3dRenderer(Vector3 cameraPoint, double unitS, int viewportDistance, Vector2 viewportSize)
     {
         aGfx.UpdateSettings(cameraPoint, unitS, viewportDistance);
+        aGfx.UpdateViewport(viewportSize);
     }
 }

@@ -4,13 +4,12 @@ namespace SimpleEngine
 {
     public class AdvancedGraphics : BaseGraphics
     {
-        private readonly ILineBuffer<Vector3> WorldLineBuffer;
-        private readonly ILineBuffer<Vector2> ScreenLineBuffer;
+        private readonly ILineBuffer<Vector3> WorldLineBuffer; // TODO store color alongside coordinates
+        private readonly ILineBuffer<Vector3> StaticLineBuffer;
 
         private int viewportDistance;
-        private readonly int viewportSizeX;
-        private readonly int viewportSizeY;
-        private readonly Vector2 viewportCenter;
+        private Vector2 viewportSize;
+        private Vector2 viewportCenter;
         private Vector3 cameraPoint;
         private double unitS;
         private double[,] vnMatrix;
@@ -18,14 +17,11 @@ namespace SimpleEngine
         public AdvancedGraphics(DirectBitmap bitmap) : base(bitmap)
         {
             WorldLineBuffer = new LineBuffer3d();
-            ScreenLineBuffer = new LineBuffer2d();
-            viewportSizeX = bitmap.Width / 2;
-            viewportSizeY = bitmap.Height / 2;
-            viewportCenter = new Vector2(viewportSizeX, viewportSizeY);
-            cameraPoint = new Vector3(1, 1, 1);
-            unitS = 1;
-            viewportDistance = 1;
-            CalculateVNMatrix();
+            StaticLineBuffer = new LineBuffer3d();
+            // ScreenLineBuffer = new LineBuffer2d();
+            viewportSize = new Vector2(bitmap.Width / 2, bitmap.Height / 2);
+            viewportCenter = new Vector2(viewportSize.x, viewportSize.y);
+            UpdateSettings(new Vector3(1, 1, 1), 1, 1);
         }
 
         public void UpdateSettings(Vector3 cameraPoint, double unitS, int viewportDistance)
@@ -36,24 +32,34 @@ namespace SimpleEngine
             CalculateVNMatrix();
         }
 
-        public void DrawLine(Vector3 p1, Vector3 p2)
+        public void UpdateViewport(Vector2 viewportSize)
         {
-            WorldLineBuffer.AddLine(p1, p2);
+            this.viewportSize = viewportSize;
+            viewportCenter = new Vector2(viewportSize.x, viewportSize.y);
+        }
+
+        public void DrawLine(Vector3 p1, Vector3 p2, bool _static)
+        {
+            if (_static)
+            {
+                StaticLineBuffer.AddLine(p1, p2);
+            }
+            else
+            {
+                WorldLineBuffer.AddLine(p1, p2);
+            }
         }
 
         public void LoadFromFile(string filePath)
         {
-            // Load local coordinates
+            // Load world space coordinates
             WorldLineBuffer.ReadFromFile(filePath);
-            // Convert to global coordinates
-            ApplyVNMatrix();
         }
 
         public void Clear(bool screen)
         {
             if (screen) base.Clear(Color.White);
             WorldLineBuffer.Clear();
-            ScreenLineBuffer.Clear();
         }
 
         private void CalculateVNMatrix()
@@ -111,37 +117,30 @@ namespace SimpleEngine
             vnMatrix = Util.ConcatMatricies(t1, t2, t3, t4, t5, nMatrix);
         }
 
-        private void ApplyVNMatrix()
-        {
-            // Converts from Local World Space to Global World Space
-            WorldLineBuffer.Execute(p1 =>
-            {
-                // Grabs the verticies according to the line table
-                (var x1, var y1, var z1) = p1;
-                // Convert the coordinates into a vector
-                double[,] p1Vec = { { x1, y1, z1, 1 } };
-                // Concatenate with the VN Matrix
-                double[,] n_p1Vec = Util.ConcatMatricies(p1Vec, vnMatrix);
-                // Set the new values
-                p1.x = n_p1Vec[0, 0];
-                p1.y = n_p1Vec[0, 1];
-                p1.z = n_p1Vec[0, 2];
-            });
-        }
-
         public void DrawFromBuffer()
         {
-            // Perspective projection with Global World Space Values
-            int vSx = viewportSizeX;
-            int vSy = viewportSizeY;
+            // Create a copy of the buffer with the VN matrix applied (WCS -> ECS)
+            var vnCopy = WorldLineBuffer.MatrixCopy(vnMatrix);
+            var svnCopy = StaticLineBuffer.MatrixCopy(vnMatrix);
+            // Perspective projection with Global World Space Values (ECS -> 2d)
+            var vSx = (int) viewportSize.x;
+            var vSy = (int) viewportSize.y;
             var vCx = viewportCenter.x;
             var vCy = viewportCenter.y;
-            WorldLineBuffer.Execute((p1, p2) =>
+            vnCopy.Execute((p1, p2) =>
             {
-                int xS1 = (int)(p1.x / p1.z * vSx + vCx);
-                int yS1 = (int)(p1.y / p1.z * vSy + vCy);
-                int xS2 = (int)(p2.x / p2.z * vSx + vCx);
-                int yS2 = (int)(p2.y / p2.z * vSy + vCy);
+                var xS1 = p1.x / p1.z * vSx + vCx;
+                var yS1 = p1.y / p1.z * vSy + vCy;
+                var xS2 = p2.x / p2.z * vSx + vCx;
+                var yS2 = p2.y / p2.z * vSy + vCy;
+                DrawLineBresenham(new Vector2(xS1, yS1), new Vector2(xS2, yS2));
+            });
+            svnCopy.Execute((p1, p2) =>
+            {
+                var xS1 = p1.x / p1.z * vSx + vCx;
+                var yS1 = p1.y / p1.z * vSy + vCy;
+                var xS2 = p2.x / p2.z * vSx + vCx;
+                var yS2 = p2.y / p2.z * vSy + vCy;
                 DrawLineBresenham(new Vector2(xS1, yS1), new Vector2(xS2, yS2));
             });
         }
@@ -153,11 +152,10 @@ namespace SimpleEngine
                 throw new ArgumentException("Matrix must be 4x4");
             }
             base.Clear(Color.White);
-            ScreenLineBuffer.Clear();
             WorldLineBuffer.Execute(p1 =>
             {
                 // Grabs the verticies according to the line table
-                (var x1, var y1, var z1) = p1;
+                var (x1, y1, z1) = p1;
                 // Convert the coordinates into a vector
                 double[,] p1Vec = {{x1, y1, z1, 1}};
                 // Concatanate the position with the transformation matrix
