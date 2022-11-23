@@ -1,18 +1,21 @@
 # SimpleEngine
-A WIP 2d/3d engine for use in my computer graphics endeavors.
+A WIP 2d/3d rendering engine for use in my computer graphics endeavors.
 
 ## Features
 * Line drawing
 * Circle drawing
-* 2d transformations (translate, rotate, scale)
-* Load and save from file
-* 3d -> 2d perspective projection
-* Viewport and camera settings
+* 2D transformations (translate, rotate, scale)
+* 3D transformations
+* Load and save models
+* Perspective projection
+* Viewport and camera manipulation
 
 ### TODO
-* 3d transformations
+* Proper driver
 * Line clipping
 * Filling
+* Spheres
 * Polygons
 * Frame processing
 * Effects
+* Ray tracing
